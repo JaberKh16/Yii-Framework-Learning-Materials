@@ -1,0 +1,146 @@
+Yii Commands Concepts
+======================
+Yii provides several powerful command-line tools through its yii console script. Here's a comprehensive list of commonly used Yii commands with examples:
+
+
+a. Basic Commands
+
+    i) Help command
+
+            $ ./yii help
+
+ b. Display Command
+
+    i) List all available commands
+
+            $ ./yii list
+
+c   Application Commands
+
+    i) Serve application
+
+        $   ./yii serve             # serve on default port
+        $   ./yii serve --port=8888 # serve with specified port
+
+Migratiun Commands
+
+    i ) Create migration
+
+        $   ./yii migrate/create create_post_table
+
+    ii) Apply migrations
+
+        $   ./yii migrate
+        $   ./yii migrate/up 3    # Apply 3 migrations
+
+    iii) Rollback migrations
+
+        $   ./yii migrate/down
+        $   ./yii migrate/down 2  # Rollback 2 migrations
+
+Model Commands
+    i) Generate models from database
+
+        $   ./yii gii/model --tableName=user --modelClass=User
+
+    ii) Database shell
+
+        $   ./yii db
+
+Cache Commands
+
+    i) Flush cache
+
+        $   ./yii cache/flush
+        $   ./yii cache/flush-all
+
+    ii) clear schema cache
+
+        $   ./yii cache/flush-schema
+
+GII Commands (Code Generation)
+
+    i)  Generate CRUD
+
+            $   ./yii gii/crud --modelClass=app\\models\\Post --controllerClass=app\\controllers\\PostController
+
+    ii)  Generate controller
+
+            $   ./yii gii/controller --controllerClass=app\\controllers\\SiteController
+
+    iii) Generate form
+
+            $   ./yii gii/form --modelClass=app\\models\\ContactForm
+
+    iv) Generate module
+
+            $   ./yii gii/module --moduleID=admin
+
+Testing Commands
+
+    i) Run tests
+
+        $   ./yii test
+        $   ./yii test unit/PostTest
+
+Extension Commands
+
+    i) Create extension
+
+        $   ./yii extension/create myextension
+
+    ii) Custom Command Examples
+
+    Create custom command
+    php
+
+// console/controllers/HelloController.php
+namespace app\commands;
+
+use yii\console\Controller;
+
+class HelloController extends Controller
+{
+    public function actionIndex($message = 'hello world')
+    {
+        echo $message . "\n";
+    }
+}
+
+Then run:
+
+    ./yii hello
+    ./yii hello/goodbye
+
+Advanced Commands
+
+    Run PHP interactive shell
+
+./yii shell
+
+Message command (for translations)
+
+./yii message/config @app/messages/config.php
+./yii message/extract @app/messages/config.php
+
+Fixture loading
+
+    ./yii fixture/load User
+    ./yii fixture/load "*"
+
+REST API Commands (for yii2-rest extension)
+
+    Generate REST API controller
+
+    ./yii gii/module --moduleID=api
+    ./yii gii/rest --modelClass=app\\models\\User --controllerClass=app\\modules\\api\\controllers\\UserController
+
+Remember that available commands may vary depending on:
+
+    Yii version (2.0.x)
+
+    Installed extensions
+
+    Your application's custom commands
+
+You can always use ./yii help <command> to get detailed information about a specific command.
