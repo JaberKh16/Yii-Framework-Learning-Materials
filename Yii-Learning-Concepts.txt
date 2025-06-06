@@ -1,0 +1,45 @@
+Yii Learning Concepts
+=====================
+Yii, a generic framework that high-performance PHP framework - based on the MVC (Model-View-Controller) design pattern and provides a rich set of features to help developers build robust and scalable applications.
+
+Yii is a component-based framework, which means that it is built around the concept of reusable components. This allows developers to create modular applications that can be easily extended and maintained.
+
+Yii is also designed to be fast and efficient, with a focus on performance and scalability.
+Features:
+    1. caching
+    2. lazy loading,
+    3. optimized database access
+    4. built-in support for AJAX,
+    5, security features such as input validation and output filtering.
+    6. support for multiple database types,
+    7. support for multiple languages and localization,
+    8. support for RESTful APIs,
+    9. support for unit testing and behavior-driven development (BDD),
+    10. support for code generation and scaffolding,
+    11. support for web services and SOAP,
+    12. support for third-party libraries and extensions,
+    13. support for multiple authentication and authorization methods,
+    14. support for multiple caching methods,
+    15. support for multiple session management methods,
+    16. support for multiple logging methods,
+
+
+Components
+----------
+Components are the maining blocks of Yii applications. Components are instance of yii\base\Components or on extended classs.
+Has 3 features to provide to classes:
+    a. Properties
+    b. Events
+    c. Behaviours
+
+These makes Yii classes much more customizable example- yii/jui/DatePicker an Interface(user) components which can be used in view to genrate a datepicker.
+
+Code:
+    use yii\jui\DatePicker;
+    echo DatePicker::widget([
+        'language' => 'ru',
+        'name' => 'country',
+        'clientOptions' => [
+            'dateFormat' => 'yy-mm-dd',
+        ]
+    ]);
