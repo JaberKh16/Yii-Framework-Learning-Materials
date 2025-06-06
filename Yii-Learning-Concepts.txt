@@ -23,6 +23,11 @@ Features:
     15. support for multiple session management methods,
     16. support for multiple logging methods,
 
+Yii supports two types of application - 
+    1. web applications
+    2. console applications
+
+
 
 Components
 ----------
@@ -43,3 +48,28 @@ Code:
             'dateFormat' => 'yy-mm-dd',
         ]
     ]);
+
+To called a component -
+    a) web.php => has config setup which is a assertive array consists of different configuration setup - components : []
+    b) define a compoents has  ways -
+        1. in bootstrap : [ 'log', 'compoent_name'] # specifying compoents name
+        2. declared a keyword- an associative array contains - 
+            i. if have some properties setup -
+                'compoent_name': [
+                    'class' => 'app\path\ComponentName',
+                    'other_prop' => true
+                ]`
+            ii. if have no property setup -
+                'compoent_name': [
+                    'class' => 'app\path\ComponentName',
+                    'other_prop' => true
+                ]
+        3. create a closure - 
+                'compoent_name' => function(){
+                    return new \app\path\ComponentName;  # via returning an instance
+                }
+
+
+
+
+By default, components are lazy loaded a singletance which will only be used if get instantiated.

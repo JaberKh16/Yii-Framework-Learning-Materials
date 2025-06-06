@@ -64,16 +64,19 @@ class SiteController extends Controller
     public function actionIndex()
     {
         echo "<pre>";
-        var_dump(Yii::$app->getAssetManager());
+        var_dump(Yii::$app->assetManager);
+        // var_dump(Yii::$app->customComponent);
         echo "</pre>";
 
-        $object = Yii::createObject ([
-            'class' => 'CustomizablComponents',
-            'property1' => 'Prop1',
-            'property2' => 'Prop2'
-        ], []);
+        var_dump(Yii::$app->testComponent);
 
-        var_dump($object);
+        // $object = Yii::createObject ([
+        //     'class' => 'CustomizablComponent',
+        //     'property1' => 'Prop1',
+        //     'property2' => 'Prop2'
+        // ], []);
+
+        // var_dump($object);
 
         return $this->render('index');
     }

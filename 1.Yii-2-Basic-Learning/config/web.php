@@ -43,19 +43,23 @@ $config = [
             ],
         ],
         "db" => $db,
-        /*
+        
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
             ],
         ],
-        */
+        
+        // new components added
         "assetManager" => [
             "class" => "app\components\AssetManagerComponent",
         ],
         'customComponent' => [
             'class' => "app\components\CustomizablComponent"
+        ],
+        'testComponent' => [
+            'class'=> 'app\components\TestComponent',
         ]
     ],
     "params" => $params,
