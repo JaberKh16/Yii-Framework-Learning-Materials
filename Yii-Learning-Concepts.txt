@@ -148,6 +148,23 @@ To called a component -
 
 By default, components are lazy loaded a singletance which will only be used if get instantiated.
 
+
+Core Application Components:
+---------------------------
+a. assetManager                 - manages asset bundles and asset publishing
+b. db                           - represents db connection
+c. errorHandler                 - handles PHP errors and exceptions
+d. formatter                    - formats data displayed to end users
+e. i18n                         - supports message translations and formatting
+f. log                          - manage log targets
+g. yii\swiftmailer\Mailer       - supports mail composing and sending
+h. response                     - represent response sent to end users
+i. request                      - represent request from end users
+j. session                      - represent session information
+k. urlManager                   - supports URL parsing and creation
+l. user                         - represents user authentication
+m. view                         - supports view rendering
+
 Controllers:
 -----------
 Controllers is a class that is a middlepart of MVC which connects Model and Views. Controllers are based of actions.
@@ -177,7 +194,36 @@ Types of action:
 
 By default, any controller needs to extends from \yii\web\Controller - a base class of controller.
 
-Route Mapping In Controller:
+Note: 
+a. inline action:
+    i.  need to be public otherwise not inline
+    ii. methods name are case-sensitive
+
+b. standalone action:
+    i.   are defined in terms of action classes extending - yii\base\Action or its child classes
+    ii.  to use should declare it in the "action map" overidding the yii\base\Controller::actions() method
+    iii. unlike inline action - action IDs for this can contain arbitrary chracters as long as they declared in the actions() method
+    iv.  to create standlone action class - should extend yii\base\Action or a child classs and implements a public method named run()
+         where the role of the run() method is similar to that of an action method.
+
+         <?php
+            namespace app\components;
+
+            use yii\base\Action;
+
+            class HelloWorldAction extends Action
+            {
+                public function run()
+                {
+                    return "Hello World";
+                }
+            }
+
+
+
+
+Route Mapping In Controller - called Controller Class Namimg:
+-------------------------------------------------------------
 
 Single Word:
 url : article/hello
@@ -185,8 +231,97 @@ route_mapping: article => Article => ArticleController
 
 Double Word:
 url: news-article/list-articles
-route_mapping: news-article -> News-Article -> NewsArticle -> NewsArticleController -> \app\controllers\NewsArticleController
+route_mapping: news-article -> News-Article -> NewsArticle -> NewsArticleController -> app\controllers\NewsArticleController
 
+Directory:
+url: admin/post-comment 
+route_mapping: admin/Post-Comment -> admin/PostComment -> admin/PostCommentController -> app\controllers\admin\PostCommentController;
+
+Like - adminPanels/post-comment becomes app\controllers\adminPanels\PostCommentController.
+
+
+Controller Mapping
+------------------
+Can configure the "controller map" to overcome the constraints of the controller IDs and class names. Useful when using third party controllers
+and do not have controll over their class names.
+
+configure controller map in the application configs:
+    [
+        'controllerMap' => [
+            // declares "account" controller using a class name
+            'account' => 'app\controllers\UserController',
+
+            // declares "article" controller using a configuration array
+            'article' => [
+                'class' => 'app\controllers\PostController',
+                'enableCsrfValidation' => false,
+            ],
+        ],
+    ]
+
+Default Controller
+------------------
+Each application has a default controller specified via the yii\base\Application::$defaultRoute property. 
+When a request does not specify a route, the route specified by this property will be used.
+For 
+    a. Web      - 'site'
+    b. Console  - 'help'
+
+configure deafult controller in the application configs:
+    [
+        'defaultRoute' => 'main',
+    ]
+
+Action Parameters
+-----------------
+In Controller - both run() and inline methods can take paramters if does then called - Action Parameters. Where values are stored in $_GET(for web)
+and can be obtained from request.
+
+Example:
+
+class PostController extends Controller
+{
+    public function actionView($id, $version = null)
+    {
+        // ...
+    }
+}
+
+request is -  https://hostname/index.php?r=post/view&id=123 => $id = 123 and $version = null # thus not provided
+
+Can also hint with type specifies -
+class PostController extends Controller
+{
+    public function actionView($id, $version = null)
+    {
+        // ...
+    }
+}
+
+request is: https://hostname/index.php?r=post/view&id[]=123 => $id = ['123'] and $version = null # thus not provided
+
+Note: though the method expects $id paramter to be not null if request has no query string provided then it will through an exception.
+
+
+Default Action
+--------------
+Each controller has a default action specified via - yii\base\Controller::$defaultAction property. 
+When a route contains the controller ID only, it implies that the default action of the specified controller is requested.
+
+By default, the default action is set as => $defaultAction = 'index'. Can be change through overidding the default value of this -
+
+namespace app\controllers;
+use yii\web\Controller;
+
+class SiteController extends Controller
+{
+    public $defaultAction = 'home';
+
+    public function actionHome()
+    {
+        return $this->render('home');
+    }
+}
 
 Controller Lifecycle
 ---------------------
@@ -224,6 +359,69 @@ config = [
     });
 ]
 
+Routes
+------
+Routes are the things end users accessed which has folliwing parts:
+    a. module ID        : exits only if controller belongs to non-application module
+    b. controller ID    : a string that uniquely identifies controller among controllers within application
+    c. action ID        : a string that uniquely identifies the action among other all actions within same controller   
+
+Routes Format:
+a. If not belongs to module -
+    Syntax: 
+        ControllerID/ActionID
+b. If belongs to module -
+    Syntax:
+        ModuleID/ControllerID/ActionID
+
+Example:
+    if the request is - http://domain.com/index.php?r=site/index => SiteController/actionIndex
 
 
- 
+
+Models: yii\base\Model
+------
+Model are part of MVC architecture that are objects business data, logic and rules.
+
+Model can be created via extending - yii/base/Model or its child classes which supports features like -
+    a. Attributes           - represent the business data: access like - normal object or array
+    b. Attributes Label     - specify the display labels for attributes
+    c. Massive Assignment   - supports populating multiple attributes in a single step
+    d. Rules(Validation)    - ensure input data based on the defined rules
+    e. Data Exporting       - allow model data to be exported in terms of array with customizable formats
+
+Example:
+    <?php
+        namespace app\models; # under app 
+        use yii\base\Model;
+
+        class ModelName extends Model{
+            # properties
+            public static $id;
+            public $title = null;
+            public $content = null;
+
+            # rules
+            public function rules(): array{
+                return [
+                    [['title'], 'required', 'string', 'max' => 200],
+                    [['content'], 'required']
+                ]
+            }
+
+            # attributes label
+            public function attributesLabel(): array{
+                return [
+                    'id' => 'ID,
+                    'content' => 'Content'
+                ]
+            }
+
+            # relation
+            public function getID(): void {
+                return $this->hasOne(Article::class, []);
+            }
+        }
+
+
+

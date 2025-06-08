@@ -3,8 +3,11 @@
 namespace app\controllers;
 
 use yii\helpers\VarDumper;
+use yii\web\Controller;
+use app\models\Article;
 
-class ArticleController extends \yii\web\Controller
+
+class ArticleController extends Controller
 {
     public function actionIndex()
     {
@@ -21,8 +24,8 @@ class ArticleController extends \yii\web\Controller
             echo '</pre>';
         }
 
-        // if parent action called retunr parent::beforeAction() called the server info in console
-        if(!parent::beforeAction($action)){
+        // if parent action called return parent::beforeAction() called the server info in console
+        if(parent::beforeAction($action)){
             return parent::beforeAction($action);
         } else{
             return false;
@@ -30,8 +33,9 @@ class ArticleController extends \yii\web\Controller
     }
 
     public function actionView($id){
-        return $this->render('view',['model'=>$this->findModel($id)]);
+        return $this->render('article/view',['model'=>$this->findModel($id)]);
     }
+    
 
     // show the passed query string 
     public function actionParams($query_strings = null){
@@ -46,5 +50,16 @@ class ArticleController extends \yii\web\Controller
             }
         }
     }
+
+    public function actionCreate(){
+        $model = new Article();
+
+        $model->id = 'ID0234234';
+        $model->title = 'The Book';
+        $model->content = 'Book changed life provide the perception to see learned events.';
+
+        return $this->render("view", ["model" => $model]);
+    }
+
 
 }
