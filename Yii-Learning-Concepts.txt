@@ -28,6 +28,83 @@ Yii supports two types of application -
     2. console applications
 
 
+Application Structure
+---------------------
+Yii are built on MVC pattern architecture. It also have the following entities:
+    a. Entry Scrips - responsible for starting a request handling cycle
+    b. Application  - globally accessible objects that manange application components and coordinate them to fullfil request
+    c. Components   - objects registered with applications and provide various fullfilling request
+    d. Modules      - self-contained packages that contain complete MVC by themseves. Also an application can organized in terms of multiple components
+    e. Filters      - a code that need to be invoked before and after the handling of each request by controllers.
+    f. Widgets      - objects that can be embedded with Views, might can hold controllers logic and also reusuable in different views.
+
+
+
+Yii Entry script
+-----------------
+Application are objects that govern the overall structure and lifecycle of Yii application. Each Yii application system contains a single
+application object which is created in the entry script and globally accessible through the expression - \Yii::$app 
+
+Its the first step of application bootstrapping process. Any application (web or console) has a single entry script. It basically instantiated
+the application instance and forward it to the request.
+    a. web          - has index.php file to serve web acceessibility
+    b. contsole     - stored in "base path" of application named - yii and provided yii command facilities
+
+
+Work of Entry script of Web
+----------------------------
+<?php
+
+# 1. define global constants
+defined('YII_DEBUG') or define('YII_DEBUG', true); 
+defined('YII_ENV') or define('YII_ENV', 'dev');
+
+
+// register Composer autoloader
+require __DIR__ . '/../vendor/autoload.php';
+
+// include Yii class file
+require __DIR__ . '/../vendor/yiisoft/yii2/Yii.php';
+
+// load application configuration
+$config = require __DIR__ . '/../config/web.php';
+
+// create, configure and run application
+(new yii\web\Application($config))->run();
+
+Entry Script of Console
+------------------------
+#!/usr/bin/env php
+<?php
+/**
+ * Yii console bootstrap file.
+ *
+ * @link https://www.yiiframework.com/
+ * @copyright Copyright (c) 2008 Yii Software LLC
+ * @license https://www.yiiframework.com/license/
+ */
+
+# global constants
+defined('YII_DEBUG') or define('YII_DEBUG', true);
+defined('YII_ENV') or define('YII_ENV', 'dev');
+
+// register Composer autoloader
+require __DIR__ . '/vendor/autoload.php';
+
+// include Yii class file
+require __DIR__ . '/vendor/yiisoft/yii2/Yii.php';
+
+// load application configuration
+$config = require __DIR__ . '/config/console.php';
+
+$application = new yii\console\Application($config);
+$exitCode = $application->run();
+exit($exitCode);
+
+To access:
+Syntax:
+    Yii::$app->actionId; # here - actionId is the compenent, module etc
+
 
 Components
 ----------
@@ -69,7 +146,84 @@ To called a component -
                     return new \app\path\ComponentName;  # via returning an instance
                 }
 
-
-
-
 By default, components are lazy loaded a singletance which will only be used if get instantiated.
+
+Controllers:
+-----------
+Controllers is a class that is a middlepart of MVC which connects Model and Views. Controllers are based of actions.
+
+Types of action:
+    i)  inline action - prefix with 'action' word: are just method
+        public function actionIndex(){
+            return $this->render(view: index); // render a view
+        }
+
+    ii) standalone action - are classes what are used in multiple application or controllers purpose is to provide resuable components.
+
+        public function actions(){
+            // combination of ErrorAction and CaptchaAction classes
+            return [
+                'error' => [ // actionId
+                    'class' => 'yii\web\ErrorAction', // value: array class configuration object
+                ],
+                'captcha' => [
+                    'class' => 'yii\captcha\CaptchaAction',
+                    'fixedVerifyCode' => Yii_ENVC_TEST ? 'test' : null,
+                ]
+            ]
+        }
+
+        Here - Each key is an actionId and the value is the array class configuration object
+
+By default, any controller needs to extends from \yii\web\Controller - a base class of controller.
+
+Route Mapping In Controller:
+
+Single Word:
+url : article/hello
+route_mapping: article => Article => ArticleController
+
+Double Word:
+url: news-article/list-articles
+route_mapping: news-article -> News-Article -> NewsArticle -> NewsArticleController -> \app\controllers\NewsArticleController
+
+
+Controller Lifecycle
+---------------------
+request is made and the controller is resolve then -
+1. instance creted - yii\base\Controller::init();
+2. create an action - if the actionId is provided in the route
+3. default action - if actionId is not provided in the route and create a action for the default
+4. actions() map - after having actionId search through mapping via actions() method which resolves if found then this, otherwise inline
+5. inline action - if the actionId not found here also it goes for exception
+6. InvalidRouteException - a class to provide exception handling
+
+If actionId found and the action is created it sequentially called 3 things -
+
+    1. Application::beforeAction - beforeAction() event
+    2. Module::beforeAction 
+    3. Controller::beforeAction
+
+
+Here - If a controller is child class of another Controller it will called - parent controller first with beforeAction() and then child.
+
+Note: Now if any of the sequential called failed and return it breaks the sequence.
+
+Events Setup and Called
+------------------------
+config = [
+    'on beforeAction' => function(){
+        echo "<pre>";
+        var_dump('Application beforeAction');
+        echo "</pre>"
+    }
+    Yii::$app->controller->on(event_name: \yii\web\Controller::EVENT_BEFORE_ACTION, function(){
+        echo "<pre>";
+        var_dump('Controller before action on method');
+        echo "</pre>"
+    });
+]
+
+
+
+ 
