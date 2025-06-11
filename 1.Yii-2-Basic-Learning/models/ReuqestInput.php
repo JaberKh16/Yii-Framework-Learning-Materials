@@ -13,6 +13,6 @@ class RequestInput extends Model{
         return [
             [["name", "email"],"required", "string"],
             [["email"],"email", "max"=> "50"],
-        ]
+        ];
     }
 }

@@ -57,6 +57,9 @@ class ArticleController extends Controller
     public function actionCreate(){
         $model = new Article();
 
+        $db = Yii::$app->db;
+        var_dump($db);
+
         $model->id = 'ID0234234';
         $model->title = 'The Book';
         $model->content = 'Book changed life provide the perception to see learned events.';

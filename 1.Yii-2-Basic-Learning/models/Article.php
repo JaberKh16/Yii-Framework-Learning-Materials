@@ -82,7 +82,8 @@ class Article extends Model{
 
     public static function tableName()
     {
-        return 'articles'; // Your table name here
+        return 'articles'; // table name if the name is exact
+        return '{{%articles}}'; // table name if prefix with some work % ensures the prefix
     }
 
     # custom setter
