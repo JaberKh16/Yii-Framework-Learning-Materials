@@ -63,11 +63,13 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
+        # accessing component
         echo "<pre>";
         var_dump(Yii::$app->assetManager);
         // var_dump(Yii::$app->customComponent);
         echo "</pre>";
 
+        # accessing component
         var_dump(Yii::$app->testComponent);
 
         // $object = Yii::createObject ([

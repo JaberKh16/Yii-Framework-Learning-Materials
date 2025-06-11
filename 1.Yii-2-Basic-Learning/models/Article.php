@@ -80,6 +80,12 @@ class Article extends Model{
     public $deleted_at;
 
 
+    public static function tableName()
+    {
+        return 'articles'; // Your table name here
+    }
+
+    # custom setter
     public  function setValue(){
         $this->content_type ? $this->content_type : null;
         $this->content = $this->content ? $this->content : null;
@@ -91,6 +97,7 @@ class Article extends Model{
         $this->content = $this->content ? $this->content : null;
     }
 
+    # custom getter
     public function getValue(): array{
         $result = [
             "id"=> $this->id,

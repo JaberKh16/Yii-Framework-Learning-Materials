@@ -5,7 +5,10 @@ namespace app\controllers;
 use yii\helpers\VarDumper;
 use yii\web\Controller;
 use app\models\Article;
-
+use yii\web\Request;
+use yii\web\Response;
+use Yii;
+use app\models\RequestInput;
 
 class ArticleController extends Controller
 {
@@ -61,5 +64,52 @@ class ArticleController extends Controller
         return $this->render("view", ["model" => $model]);
     }
 
+    public function actionGetArticleInstanceProperty(){
+        $model = new Article();
+        $attributesInfo = $model->getAttributes();
+        $validator_info = $model->getActiveValidators();
+        $errors_info = $model->getErrors();
+        var_dump("Errors: ", $errors_info, "attributes: ", $attributesInfo );
+    }
+
+    public function actionRequest()
+    {
+        // request info
+        $request_info = Yii::$app->request;
+        // get data
+        $get_info = Yii::$app->request->get();
+        $post_info = Yii::$app->request->post(); 
+        
+        var_dump($request_info);
+    }
+
+    public function actionResponse()
+    {
+        $response = Yii::$app->response;
+        $response->content = "Content"; # showed as action page content
+        $response->statusCode = 200; # default is 200
+
+        # changing response format
+        $response->format = Response::FORMAT_JSON; # formatting as json
+
+        # set response data = $_GET 
+        Yii::$app->response->data = Yii::$app->request->get();
+
+        # redirect
+        $this->redirect('about'); // redirect to /about
+        $redirect_path = Yii::$app->response->redirect('about', 200);
+        # return redirect_path;
+
+        return $response;
+    }
+
+    public function actionRequestInput()
+    {
+        $request_info = Yii::$app->request->post();
+        var_dump($request_info);
+        return $this->render('input', [
+            'model' => $request_info
+        ]);
+    }
 
 }
