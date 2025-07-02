@@ -1,0 +1,30 @@
+Yii DB Connection Setup Concepts
+================================
+
+- Yii offers a db.php file contains the dsn setup for db instance
+- Default Setup:
+    return [
+        "class" => "yii\db\Connection",
+        "dsn" => "mysql:host=hostname;dbname=dbname;",
+        "username" => "root",
+        "password" => "",
+        "charset" => "utf8",
+
+
+        // Schema cache options (for production environment)
+        //'enableSchemaCache' => true,
+        //'schemaCacheDuration' => 60,
+        //'schemaCache' => 'cache',
+    ];
+
+    If need can specify the port info with the "dsn" property like following:
+        "dsn" => "mysql:host=hostname;dbname=dbname;port=3312;",
+
+- To connect this db setup needs to be included as a property in the web.php file:
+
+    <?php
+        $db = require __DIR__ . '/db.php';
+
+        $config = [
+            'db' => $db,
+        ]
