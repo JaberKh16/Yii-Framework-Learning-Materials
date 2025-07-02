@@ -1,0 +1,40 @@
+Yii2 DebugBar Enable Configuration Setup
+========================================
+1. Ensure Debug Module Is Installed
+    If you installed Yii2 using Composer (basic or advanced template), the Debug module should already be included via the yiisoft/yii2-debug package.
+
+    To check, run:
+
+        $ composer require yiisoft/yii2-debug --dev
+2. Enable It in Configuration
+    For Basic Application Template:
+    Edit config/web.php and add or ensure the following under modules and bootstrap:
+
+    config/web.php:
+    if (YII_ENV_DEV) {
+        // configuration adjustments for 'dev' environment
+        $config['bootstrap'][] = 'debug';
+        $config['modules']['debug'] = [
+            'class' => 'yii\debug\Module',
+            // optionally set allowed IPs
+            'allowedIPs' => ['127.0.0.1', '::1'], // add your IP here
+        ];
+    }
+    For Advanced Application Template:
+    Edit frontend/config/main-local.php and/or backend/config/main-local.php:
+
+
+    $config['bootstrap'][] = 'debug';
+    $config['modules']['debug'] = [
+        'class' => 'yii\debug\Module',
+        'allowedIPs' => ['127.0.0.1', '::1'], // Add your IP here
+    ];
+
+3. Allow Your IP Address (Important!)
+    If you're accessing the app from a remote IP (e.g., in a VM or Docker), you must add your IP to allowedIPs:
+
+    'allowedIPs' => ['127.0.0.1', '::1', '192.168.0.*', 'your.ip.here'],
+    
+    Note: You can also allow all IPs (not recommended for production):
+
+            'allowedIPs' => ['*'],
