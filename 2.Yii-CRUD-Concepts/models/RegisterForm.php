@@ -3,6 +3,7 @@
 namespace app\models;
 
 use yii\base\Model;
+use yii\helpers\VarDumper;
 
 class RegisterForm extends Model{
 
@@ -11,6 +12,10 @@ class RegisterForm extends Model{
     public $email;
     public $password;
     public $confirm_password;
+
+    const STATUS_ACTIVE = 1; // Assuming you have a constant for active status
+    const STATUS_INACTIVE = 0; // Assuming you have a constant for inactive status
+    const STATUS_DELETED = 2; // Assuming you have a constant for deleted status
 
     public function rules()
     {
@@ -31,6 +36,36 @@ class RegisterForm extends Model{
             'password' => 'Password',
             'confirm_password' => 'Confirm Password',
         ];
+    }
+
+    public function register()
+    {
+        if ($this->validate()) {
+            // Here you would typically save the user to the database
+            // For example:
+            $user = new User();
+            $user->username = $this->username;
+            $user->email = $this->email;
+            // $user->setPassword($this->password);
+            $user->password = \Yii::$app->security->generatePasswordHash($this->password);
+            $user->access_token =  \Yii::$app->security->generateRandomString();
+            $user->status = RegisterForm::STATUS_ACTIVE; // Assuming you have a status field
+            $user->created_at = date('Y-m-d H:i:s'); // Format the current date and time
+            $user->updated_at = date('Y-m-d H:i:s'); // Format the current date and time
+            $user->auth_key = \Yii::$app->security->generateRandomString();
+            $status =  $user->save(); // Save the user to the database and return the status TRUE or FALSE
+            
+            if (!$status) {
+                // Handle the error, e.g., log it or return an error message
+                \Yii::error('User registration failed: ' . json_encode($user->getErrors()));
+
+                // \Yii::error('User registration failed: ' . VarDumper::dumpAsString($user->errors)); // using VarDumper helper to dump as string
+                return false; // Registration failed
+            }
+
+            return $status; // Simulating successful registration
+        }
+        return false; // Validation failed
     }
 
 }

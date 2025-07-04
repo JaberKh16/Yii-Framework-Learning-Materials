@@ -123,6 +123,9 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function validatePassword($password)
     {
-        return $this->password === $password;
+        // return $this->password === $password; // This is insecure, use normal text matching
+        return \Yii::$app->security->validatePassword($password, $this->password);
+        // or if you are using ActiveRecord, you can use $this->password_hash
+        // return \Yii::$app->security->validatePassword($password, $this->password_hash);
     }
 }
